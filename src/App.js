@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import './App.css';
-
 let defaultStyle = {
   color: '#fff'
 }
@@ -43,7 +42,6 @@ let fakeServerData = {
     ]
   }
 }
-
 class PlaylistCounter extends Component {
   render() {
     return(
@@ -79,7 +77,6 @@ class Filter extends Component {
     );
   }
 }
-
 class Playlist extends Component {
   render() {
     return(
@@ -96,7 +93,6 @@ class Playlist extends Component {
     );
   }
 }
-
 class App extends Component {
   constructor() {
     super();
@@ -132,5 +128,4 @@ class App extends Component {
     );
   }
 }
-
 export default App;
