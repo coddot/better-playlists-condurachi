@@ -105,6 +105,14 @@ class App extends Component {
       }, 1500);
   }
   render() {
+    let playlistToRender = this.state.serverData.user ? 
+      this.state.serverData.user.playlists.
+        filter( /** expects its parameter function to be a callback function*/
+          playlist => playlist.name.toLocaleLowerCase().includes(
+            this.state.filterString.toLocaleLowerCase()
+          )
+        )
+      : []
     return (
       <div className="App">
         {this.state.serverData.user ?
@@ -112,15 +120,11 @@ class App extends Component {
             <h1 style={{...defaultStyle, 'font-size': '54px'}}>
               {this.state.serverData.user.name}'s Playlist
             </h1>
-            <PlaylistCounter playlists = {this.state.serverData.user.playlists}/> 
-            <HoursCounter playlists = {this.state.serverData.user.playlists}/> 
+            <PlaylistCounter playlists = {playlistToRender}/> 
+            <HoursCounter playlists = {playlistToRender}/> 
             <Filter onTextChange = {text => this.setState({filterString: text})}/>
             {
-              this.state.serverData.user.playlists.filter( /** expects its parameter function to be a callback function*/
-                playlist => playlist.name.toLocaleLowerCase().includes(
-                  this.state.filterString.toLocaleLowerCase()
-                )
-              ).map( /** map = it's a way of transforming an array to another array; it goes in the entire playlits array and each playlist will transfrom and create a new object with that */
+              playlistToRender.map( /** map = it's a way of transforming an array to another array; it goes in the entire playlits array and each playlist will transfrom and create a new object with that */
                 playlist => <Playlist playlist={playlist}/>
               ) 
             }
