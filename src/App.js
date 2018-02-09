@@ -79,15 +79,13 @@ class Filter extends Component {
 }
 class Playlist extends Component {
   render() {
+    let playlist = this.props.playlist;
     return(
       <div style={{...defaultStyle, width: "25%", display: 'inline-block'}}>
         <img src="" alt=""/>
-        <h3>Playlist Name</h3>
+        <h3>{playlist.name}</h3>
         <ul>
-          <li>Song 1</li>
-          <li>Song 2</li>
-          <li>Song 3</li>
-          <li>Song 4</li>
+          {playlist.songs.map(song => <li>{song.name} | {song.duration}</li>)}
         </ul>
       </div>
     );
@@ -115,10 +113,9 @@ class App extends Component {
             <PlaylistCounter playlists = {this.state.serverData.user.playlists}/> 
             <HoursCounter playlists = {this.state.serverData.user.playlists}/> 
             <Filter/>
-            <Playlist/>
-            <Playlist/>
-            <Playlist/>
-            <Playlist/>
+            {
+              this.state.serverData.user.playlists.map(playlist => <Playlist playlist={playlist}/>) /** map = it's a way of transforming an array to another array; it goes in the entire playlits array and each playlist will transfrom and create a new object with that */
+            }
           </div> : <h1 style={defaultStyle}>Loading...</h1>
         }
       </div>
