@@ -38,7 +38,7 @@ let fakeServerData = {
           {name:'yjhe5', duration: 744},
           {name:'yt56y7ujhf', duration: 645}
         ],
-      },      
+      }    
     ]
   }
 }
@@ -51,14 +51,14 @@ class PlaylistCounter extends Component {
     );
   }
 }
-class HourCounter extends Component {
+class HoursCounter extends Component {
   render() {
-    let allSongs = this.props.playlists.reduce((songs, eachPlaylist) => {
-      return songs.concat(eachPlaylist.songs)
-    },[])
+    let allSongs = this.props.playlists.reduce((songs, eachPlaylist) => { /** we reduce the playlists to a single list of songs; first argument = what we pick up; second argument = the initial state of the reduce - empty */
+      return songs.concat(eachPlaylist.songs) /** songs starts with nothing, and then we add each playlist song to that  */
+    }, [])
     let totalDuration = allSongs.reduce((sum, eachSong) => {
       return sum + eachSong.duration
-    },0)
+    }, 0)
     return(
       <div style={{...defaultStyle, width: '40%', display: 'inline-block'}}>
         <h2>{Math.round(totalDuration/60/60)} hours</h2>
@@ -95,28 +95,25 @@ class Playlist extends Component {
 }
 class App extends Component {
   constructor() {
-    super();
+    super()
     this.state = {serverData: {}}
   }
   componentDidMount() {
     setTimeout( /* insert a delay to mimic taking to a server */
-      () => { /*arrow function locks 'this' with what is was just fefore declaring the function  */
+      () => { /* the Arow Function locks 'this' with what is was just fefore declaring the function  */
         this.setState({serverData: fakeServerData})
-      }, 
-    1500);
+      }, 1500);
   }
   render() {
     return (
       <div className="App">
-        {this.state.serverData.user ? 
+        {this.state.serverData.user ?
           <div>
-            {this.state.serverData.user && /*check on the left side of &&, and if it true then checks what is on the right side of && if it true and then moves*/
-             <h1 style={{...defaultStyle, 'font-size': '54px'}}>
-                      {this.state.serverData.user.name}'s Playlist
-             </h1>
-            }
+            <h1 style={{...defaultStyle, 'font-size': '54px'}}>
+              {this.state.serverData.user.name}'s Playlist
+            </h1>
             <PlaylistCounter playlists = {this.state.serverData.user.playlists}/> 
-            <HourCounter playlists = {this.state.serverData.user.playlists}/> 
+            <HoursCounter playlists = {this.state.serverData.user.playlists}/> 
             <Filter/>
             <Playlist/>
             <Playlist/>
