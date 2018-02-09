@@ -70,7 +70,7 @@ class Filter extends Component {
   render() {
     return(
       <div style={defaultStyle}>
-        <img src=""/>
+        <img src="" alt=""/>
         <input type="text"/>
         Filter
       </div>
@@ -80,8 +80,8 @@ class Filter extends Component {
 class Playlist extends Component {
   render() {
     return(
-      <div style={{...defaultStyle, display: 'inline-block', width: "25%"}}>
-        <img/>
+      <div style={{...defaultStyle, width: "25%", display: 'inline-block'}}>
+        <img src="" alt=""/>
         <h3>Playlist Name</h3>
         <ul>
           <li>Song 1</li>
