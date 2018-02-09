@@ -71,8 +71,7 @@ class Filter extends Component {
     return(
       <div style={defaultStyle}>
         <img src="" alt=""/>
-        <input type="text"/>
-        Filter
+        <input type="text" onKeyUp={event => this.props.onTextChange(event.target.value)}/>
       </div>
     );
   }
@@ -94,7 +93,10 @@ class Playlist extends Component {
 class App extends Component {
   constructor() {
     super()
-    this.state = {serverData: {}}
+    this.state = {
+      serverData: {},
+      filterString: ''
+    }
   }
   componentDidMount() {
     setTimeout( /* insert a delay to mimic taking to a server */
@@ -112,9 +114,15 @@ class App extends Component {
             </h1>
             <PlaylistCounter playlists = {this.state.serverData.user.playlists}/> 
             <HoursCounter playlists = {this.state.serverData.user.playlists}/> 
-            <Filter/>
+            <Filter onTextChange = {text => this.setState({filterString: text})}/>
             {
-              this.state.serverData.user.playlists.map(playlist => <Playlist playlist={playlist}/>) /** map = it's a way of transforming an array to another array; it goes in the entire playlits array and each playlist will transfrom and create a new object with that */
+              this.state.serverData.user.playlists.filter( /** expects its parameter function to be a callback function*/
+                playlist => playlist.name.toLocaleLowerCase().includes(
+                  this.state.filterString.toLocaleLowerCase()
+                )
+              ).map( /** map = it's a way of transforming an array to another array; it goes in the entire playlits array and each playlist will transfrom and create a new object with that */
+                playlist => <Playlist playlist={playlist}/>
+              ) 
             }
           </div> : <h1 style={defaultStyle}>Loading...</h1>
         }
