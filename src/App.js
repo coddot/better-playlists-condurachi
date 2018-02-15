@@ -1,46 +1,8 @@
 import React, { Component } from 'react';
-import './App.css';
+import './App.css'
+import queryString from 'query-string'
 let defaultStyle = {
   color: '#fff'
-}
-let fakeServerData = {
-  user: {
-    name: 'Daniel',
-    playlists: [
-      {
-        name: 'My favourites',
-        songs: [
-          {name:'Beat It', duration: 1254},
-          {name:'Canenlloni Makaroni', duration: 445},
-          {name:'Rosa Helikopter', duration: 22}
-        ],
-      },
-      {
-        name: 'Discover Weekly',
-        songs: [
-          {name:'Le Song', duration: 465},
-          {name:'The Song', duration: 65542},
-          {name:'Sangen', duration: 23}
-        ],
-      },
-      {
-        name: 'Another Playlist - the best',
-        songs: [
-          {name:'fhsgdg', duration: 342},
-          {name:'fgshg', duration: 464},
-          {name:'rthrh gfh', duration: 87412}
-        ],
-      },
-      {
-        name: 'Playlist - yeah!',
-        songs: [
-          {name:'retjnf', duration: 2565},
-          {name:'yjhe5', duration: 744},
-          {name:'yt56y7ujhf', duration: 645}
-        ],
-      }    
-    ]
-  }
 }
 class PlaylistCounter extends Component {
   render() {
@@ -81,10 +43,10 @@ class Playlist extends Component {
     let playlist = this.props.playlist;
     return(
       <div style={{...defaultStyle, width: "25%", display: 'inline-block'}}>
-        <img src="" alt=""/>
+        <img src={playlist.imageUrl} alt="" style={{width:'100px'}}/>
         <h3>{playlist.name}</h3>
         <ul>
-          {playlist.songs.map(song => <li>{song.name} | {song.duration}</li>)}
+          {playlist.songs.map(song => <li>{song.name}</li>)}
         </ul>
       </div>
     );
@@ -99,36 +61,59 @@ class App extends Component {
     }
   }
   componentDidMount() {
-    setTimeout( /* insert a delay to mimic taking to a server */
-      () => { /* the Arow Function locks 'this' with what is was just fefore declaring the function  */
-        this.setState({serverData: fakeServerData})
-      }, 1500);
+    let parsed = queryString.parse(window.location.search)
+    let accessToken = parsed.access_token
+    fetch('https://api.spotify.com/v1/me', {
+      headers: {'Authorization': 'Bearer '+accessToken}
+    }).then(response => response.json())
+      .then(data => this.setState({
+        user: {
+          name: data.display_name
+        }
+    }))
+    fetch('https://api.spotify.com/v1/me/playlists', {
+      headers: {'Authorization': 'Bearer ' + accessToken}
+    }).then(response => response.json())
+    .then(data => this.setState({
+      playlists: data.items.map(item => {
+        console.log(data.items)
+        return {
+          name: item.name,
+          imageUrl: item.images[0].url, 
+          songs: []
+        }
+    })
+    }))
   }
   render() {
-    let playlistToRender = this.state.serverData.user ? 
-      this.state.serverData.user.playlists.
-        filter( /** expects its parameter function to be a callback function*/
-          playlist => playlist.name.toLocaleLowerCase().includes(
-            this.state.filterString.toLocaleLowerCase()
-          )
-        )
-      : []
+    let playlistToRender = 
+      this.state.user &&
+      this.state.playlists 
+        ? this.state.playlists.filter( /** expects its parameter function to be a callback function*/
+            playlist => playlist.name.toLocaleLowerCase().includes(
+              this.state.filterString.toLocaleLowerCase()
+            )
+        ) : []
     return (
       <div className="App">
-        {this.state.serverData.user ?
+        {this.state.user ?
           <div>
             <h1 style={{...defaultStyle, 'font-size': '54px'}}>
-              {this.state.serverData.user.name}'s Playlist
+              {this.state.user.name}'s Playlist
             </h1>
-            <PlaylistCounter playlists = {playlistToRender}/> 
-            <HoursCounter playlists = {playlistToRender}/> 
-            <Filter onTextChange = {text => this.setState({filterString: text})}/>
-            {
-              playlistToRender.map( /** map = it's a way of transforming an array to another array; it goes in the entire playlits array and each playlist will transfrom and create a new object with that */
-                playlist => <Playlist playlist={playlist}/>
-              ) 
+            {this.state.playlists &&
+              <div>
+                <PlaylistCounter playlists = {playlistToRender}/> 
+                <HoursCounter playlists = {playlistToRender}/> 
+                <Filter onTextChange = {
+                  text => this.setState({filterString: text})
+                }/>
+                {playlistToRender.map( /** map = it's a way of transforming an array to another array; it goes in the entire playlits array and each playlist will transfrom and create a new object with that */
+                    playlist => <Playlist playlist={playlist}/>
+                )}
+              </div>
             }
-          </div> : <h1 style={defaultStyle}>Loading...</h1>
+          </div> : <button onClick={() => window.location='http://localhost:8888/login'} style={{'padding': '20px', 'margin': '20px'}}>Sign in with Spotify</button>
         }
       </div>
     );
